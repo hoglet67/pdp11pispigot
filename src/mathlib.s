@@ -1,10 +1,14 @@
 .globl	___divsi3
 .globl	___modsi3
 
+/ From:
+/ https://www.tuhs.org/cgi-bin/utree.pl?file=Xinu7/src/lib/libxc/ldiv.s
+/ https://www.tuhs.org/cgi-bin/utree.pl?file=Xinu7/src/lib/libxc/lrem.s
+
 / Long quotient
 
 ___divsi3:
-    jsr r5,csv
+        jsr     r5,csv
 	mov	10(r5),r3
 	sxt	r4
 	bpl	1f
@@ -47,7 +51,7 @@ ___divsi3:
 	neg	r1
 	sbc	r0
 9:
-    jmp cret
+        jmp     cret
 
 / The divisor is known to be >= 2^15 so only 17 cycles are needed.
 hardldiv:
@@ -109,12 +113,12 @@ hardldiv:
 	neg	r1
 	sbc	r0
 1:
-    jmp cret
+        jmp     cret
 
 / Long remainder
 
 ___modsi3:
-    jsr r5, csv
+        jsr     r5, csv
 	mov	10(r5),r3
 	sxt	r4
 	bpl	1f
@@ -151,7 +155,7 @@ ___modsi3:
 	neg	r1
 9:
 	sxt	r0
-    jmp cret
+        jmp     cret
 
 / The divisor is known to be >= 2^15.  Only 17 cycles are
 / needed to get a remainder.
@@ -206,9 +210,7 @@ hardlrem:
 	neg	r1
 	sbc	r0
 1:
-    jmp cret
-
-
+        jmp     cret
 
 csv:
 	mov	r5,r0
@@ -231,6 +233,6 @@ cret:
 	mov	(sp)+,r2
 	mov	(sp)+,r3
 	mov	(sp)+,r4
-    tst (sp)+
+        tst     (sp)+
 	mov	(sp)+,r5
 	rts	pc
