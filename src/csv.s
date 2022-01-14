@@ -11,10 +11,17 @@ csv:
 	jmp	(r0)
 
 cret:
-	mov	r5,r0
-	mov	-(r0),r4
-	mov	-(r0),r3
-	mov	-(r0),r2
-	mov	r5,sp
+// This version corrupts r0 which is used for the hi word of the division result
+//	mov	r5,r0
+//	mov	-(r0),r4
+//	mov	-(r0),r3
+//	mov	-(r0),r2
+//	mov	r5,sp
+//	mov	(sp)+,r5
+//	rts	pc
+	mov	(sp)+,r2
+	mov	(sp)+,r3
+	mov	(sp)+,r4
+    tst (sp)+
 	mov	(sp)+,r5
 	rts	pc
