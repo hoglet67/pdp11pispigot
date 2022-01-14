@@ -21,7 +21,7 @@ add_file_to_ssd () {
 for i in spigot.c test.c
 do
     name=`echo ${i%.*} | tr "a-z" "A-Z"`
-    pdp11-aout-gcc -nostdlib src/$i src/ldiv.s src/lrem.s src/csv.s -o $name
+    pdp11-aout-gcc -nostdlib src/$i src/mathlib.s -o $name
     pdp11-aout-objdump -D $name > $name.lst
     pdp11-aout-strip -D $name
     add_file_to_ssd $name
