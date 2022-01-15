@@ -4,7 +4,9 @@
 #include <stdio.h>
 #endif
 
-#define N 2800
+#define NDIGITS 1000
+
+#define N (7*NDIGITS/2)
 
 #define ARRAY 0x0FFE
 
