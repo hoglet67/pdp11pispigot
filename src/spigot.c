@@ -17,7 +17,7 @@ void print(short i);
 short r[N + 1];
 int main() {
 #else
-int startup() {
+int program() {
    short *r = (short *)ARRAY;
 #endif
    short i, k, b, c;
