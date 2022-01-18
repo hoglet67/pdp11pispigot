@@ -222,6 +222,7 @@ csv:
 	jmp	(r0)
 
 cret:
+    // TODO Use r2!
 // This version corrupts r0 which is used for the hi word of the division result
 //	mov	r5,r0
 //	mov	-(r0),r4
@@ -233,6 +234,6 @@ cret:
 	mov	(sp)+,r2
 	mov	(sp)+,r3
 	mov	(sp)+,r4
-        tst     (sp)+
+	tst (sp)+
 	mov	(sp)+,r5
 	rts	pc
