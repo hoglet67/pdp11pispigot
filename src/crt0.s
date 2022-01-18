@@ -19,8 +19,8 @@ _start:
 #        bne     L_0
 #        mov     $000137,*$0     # Store JMP _start in vector 0
 #        mov     $_start,*$2
-         jsr     pc,_program
-         rts     pc
+        jsr     pc,_program
+        emt     0
         halt
         br      _start
 
