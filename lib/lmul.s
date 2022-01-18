@@ -10,9 +10,9 @@ lmul:
 	mov	6(r5),r2
 	sxt	r1
 	sub	4(r5),r1
-	mov	10.(r5),r0
+	mov	10(r5),r0
 	sxt	r3
-	sub	8.(r5),r3
+	sub	8(r5),r3
 	mul	r0,r1
 	mul	r2,r3
 	add	r1,r3
