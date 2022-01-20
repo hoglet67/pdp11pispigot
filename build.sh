@@ -21,11 +21,11 @@ add_file_to_ssd () {
 
 if [ $build_gcc_c == "1" ]
 then
-   for i in test.c mini.c
+   for i in test.c mini.c spigot.c
    do
        addr=0x100
        name=`echo ${i%.*} | tr "a-z" "A-Z"`
-       pdp11-aout-gcc -da -nostdlib -Ttext $addr src/crt0.s src/$i -lgcc -o $name
+       pdp11-aout-gcc -nostdlib -Ttext $addr src/crt0.s src/$i -lgcc -o $name
        pdp11-aout-objdump -D $name --adjust-vma=$addr > $name.lst
        pdp11-aout-strip -D $name
        add_file_to_ssd $name
