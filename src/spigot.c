@@ -73,7 +73,7 @@ void outc(char c) {
    putchar(c);
    fflush(stdout);
 #else
-   asm("mov %0, r0" :  : "r" (c));
+   asm("mov %0, r0" :  : "r" (c) : "r0");
    asm("emt 4");
 #endif
 }

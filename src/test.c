@@ -23,7 +23,6 @@ int main() {
 #else
 int program() {
 #endif
-   outnl();
    outshort(0);
    outnl();
    outshort(12345);
@@ -257,7 +256,7 @@ void outc(char c) {
 }
 #else
 void outc(char c) {
-   asm("mov %0, r0" :  : "r" (c));
+   asm("mov %0, r0" :  : "r" (c) : "r0");
    asm("emt 4");
 }
 #endif
