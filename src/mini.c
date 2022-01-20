@@ -4,46 +4,64 @@ typedef unsigned long  uint32_t;
 
 void outc(char c);
 void outhex(uint8_t i);
-void outhex16(uint16_t pp);
-void outhex32(uint32_t pp);
-void outstr(char *c);
+void outhex32(uint32_t i);
 void outnl();
 
+unsigned long udivmodsi4(unsigned long num, unsigned long den, int modwanted);
 
+#ifdef LINUX
+int main() {
+#else
 int program() {
-      outstr("Test 1\r\n");
-      //outhex16(0x12345);
-   //   outnl();
+#endif
+   uint32_t a = 0x12345678;
+   uint32_t b = 0x100;
+   uint32_t c = udivmodsi4(a, b, 0);
+   uint32_t d = udivmodsi4(a, b, 1);
+   outhex32(c);
+   outnl();
+   outhex32(d);
+   outnl();
+}
+
+unsigned long udivmodsi4(unsigned long num, unsigned long den, int modwanted)
+{
+  unsigned long bit = 1;
+  unsigned long res = 0;
+
+  while (den < num && bit && !(den & (1L<<31)))
+    {
+      den <<=1;
+      bit <<=1;
+    }
+  while (bit)
+    {
+      if (num >= den)
+	{
+	  num -= den;
+	  res |= bit;
+	}
+      bit >>=1;
+      den >>=1;
+    }
+  if (modwanted) return num;
+  return res;
 }
 
 void outhex(uint8_t i) {
-   if (i > 15) {
-      outc('.');
-   } else if (i > 9) {
+   i &= 15;
+   if (i > 9) {
       outc(i + ('A' - 10));
    } else {
       outc(i + '0');
    }
 }
 
-void outhex16(uint16_t i) {
-   for (uint8_t d = 0; d < 4; d++) {
-      outhex(i >> 12);
-      i <<= 4;
-   }
-}
-
 void outhex32(uint32_t i) {
    for (uint8_t d = 0; d < 8; d++) {
+      // Note: this uses ASHC which is a signed shift
       outhex(i >> 28);
       i <<= 4;
-   }
-}
-
-
-void outstr(char *c) {
-   while (*c) {
-      outc(*c++);
    }
 }
 
@@ -52,7 +70,13 @@ void outnl() {
    outc(13);
 }
 
+#ifdef LINUX
 void outc(char c) {
-   asm("mov 4(r5), r0");
+   putchar(c);
+}
+#else
+void outc(char c) {
+   asm("mov %0, r0" :  : "r" (c));
    asm("emt 4");
 }
+#endif

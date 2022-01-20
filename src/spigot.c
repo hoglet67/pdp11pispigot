@@ -10,7 +10,8 @@
 
 #define ARRAY 0x0FFE
 
-void oswrch(char c);
+void outnl();
+void outc(char c);
 void print(short i);
 
 #ifdef LINUX
@@ -46,7 +47,7 @@ int program() {
       print(c + d/10000);
       c = d%10000;
    }
-   while (1);
+   outnl();
 }
 
 void print(short i) {
@@ -58,15 +59,21 @@ void print(short i) {
          digit++;
       }
       p /= 10;
-      oswrch(digit);
+      outc(digit);
    } while (p);
 }
 
-void oswrch(char c) {
+void outnl() {
+   outc(10);
+   outc(13);
+}
+
+void outc(char c) {
 #ifdef LINUX
    putchar(c);
+   fflush(stdout);
 #else
-   asm("mov 4(r5), r0");
+   asm("mov %0, r0" :  : "r" (c));
    asm("emt 4");
 #endif
 }
