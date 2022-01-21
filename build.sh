@@ -8,7 +8,7 @@ cp bbcpdp.ssd ${ssdfile}
 
 build_gcc_c=1
 build_gcc_s=0
-build_pcc=0
+build_pcc=1
 build_v7=0
 
 add_file_to_ssd () {
@@ -48,7 +48,7 @@ fi
 # PCC experiments
 if [ $build_pcc == "1" ]
 then
-    for i in spigot.c mini.c
+    for i in test.c mini.c spigot.c
     do
         name=`echo P${i%.*} | tr "a-z" "A-Z"`
 
@@ -62,12 +62,16 @@ then
         sed -i "s/jle/ble/" ${asm}
         sed -i "s/jge/bge/" ${asm}
         sed -i "s/jeq/beq/" ${asm}
+        sed -i "s/jhi/bhi/" ${asm}
+        sed -i "s/jlo/blo/" ${asm}
         sed -i "s/jne/bne/" ${asm}
         sed -i "s/jlos/blos/" ${asm}
+        sed -i "s/jhos/bhos/" ${asm}
         sed -i "s/jbr/br/"  ${asm}
 
         # Use GCC as an assembler/linker
-        pdp11-aout-gcc -nostdlib -Ttext 0x100  src/crt0.s ${asm} lib/*.s -o ${name}
+        addr=0x100
+        pdp11-aout-gcc -nostdlib -Ttext $addr  src/crt0.s ${asm} lib/*.s -o ${name}
         pdp11-aout-objdump -D $name --adjust-vma=$addr > $name.lst
         #pdp11-aout-strip -D $name
         add_file_to_ssd $name
