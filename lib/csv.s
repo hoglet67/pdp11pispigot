@@ -18,9 +18,15 @@ csv:
 	mov	r2,-(sp)
 	jsr	pc,(r0)		/ stack pc - never used
 
-/ lmul accesses parameters as 10(r5),8(r5),6(r5),4(r5)
-/ 2(r5) is the old PC pushed by JSR PC,fuction
+/ lmul accesses parameters as 010(r5),08(r5),06(r5),04(r5)
+/ 02(r5) is the old PC pushed by JSR PC,fuction
 / 0(r5) is the old R5 pushed bu JSR R5,csv
+/ -02(r5) is r4
+/ -04(r5) is r3
+/ -08(r5) is r2
+/ -010(r5) is pc - never used
+/ sp points to r5-012
+
 
 cret:
 	mov	r5,r2       / r2 = frame pointer
