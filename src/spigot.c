@@ -8,7 +8,7 @@
 
 #define N (7*NDIGITS/2)
 
-#define ARRAY 0x0FFE
+#define ARRAY 0x1FFE
 
 void outnl();
 void outc(char c);
