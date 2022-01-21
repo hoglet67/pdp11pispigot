@@ -165,45 +165,22 @@ void fail() {
    outstr(" fail\r\n");
 }
 
-// Use constants to avoid division
-static const short ps[] = {
-   10000,
-   1000,
-   100,
-   10,
-   1,
-   0};
-
 void outshort(short i) {
    if (i < 0) {
       outc('-');
       i = -i;
    }
-   const short *pp = &ps[0];
-   while (*pp) {
+   uint16_t p = 10000;
+   while (p) {
       char digit = '0';
-      while (i >= *pp) {
-         i = i - *pp;
+      while (i >= p) {
+         i = i - p;
          digit++;
       }
       outc(digit);
-      pp++;
+      p /= 10;
    };
 }
-
-// Use constants to avoid division
-static const long pl[]
-= {1000000000L,
-   100000000L,
-   10000000L,
-   1000000L,
-   100000L,
-   10000L,
-   1000L,
-   100L,
-   10L,
-   1L,
-   0L};
 
 void outhex(uint8_t i) {
    i &= 15;
@@ -227,15 +204,15 @@ void outlong(long i) {
       outc('-');
       i = -i;
    }
-   const uint32_t *pp = &pl[0];
-   while (*pp) {
+   uint32_t p = 1000000000L;
+   while (p) {
       char digit = '0';
-      while (i >= *pp) {
-         i = i - *pp;
+      while (i >= p) {
+         i = i - p;
          digit++;
       }
       outc(digit);
-      pp++;
+      p /= 10L;
    };
 }
 
