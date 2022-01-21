@@ -67,7 +67,9 @@ then
         sed -i "s/jne/bne/" ${asm}
         sed -i "s/jlos/blos/" ${asm}
         sed -i "s/jhos/bhos/" ${asm}
-        sed -i "s/jbr/br/"  ${asm}
+
+        # Allow jmps anywhere
+        sed -i "s/jbr/jmp/"  ${asm}
 
         # Use GCC as an assembler/linker
         addr=0x100
