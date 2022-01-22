@@ -46,10 +46,12 @@ int main(int argc, char *argv[]) {
       return 1;
    }
 
-   int tsize = read_word(buffer + 2);
-   int dsize = read_word(buffer + 4);
+   int tsize = read_word(buffer + 2); // text
+   int dsize = read_word(buffer + 4); // data
+   int usize = read_word(buffer + 6); // uninitialized data
+   int ssize = read_word(buffer + 8); // symbol table
 
-   if (size != HDR_SIZE + tsize + dsize) {
+   if (size != HDR_SIZE + tsize + dsize + ssize) {
       fprintf(stderr, "%s: %s: Inconsistent length fields; is the a.out stripped?\n", argv[0], infile);
       return 1;
    }
@@ -65,6 +67,9 @@ int main(int argc, char *argv[]) {
    for (int i = 0; i < tsize + dsize; i++) {
       buffer[HDR_SIZE + i] = buffer[HDR_SIZE + i + PAD_SIZE];
    }
+
+   // Remove the symbol table
+   write_word(buffer + 8, 0);
 
    // Set exec address to 0x100
    write_word(buffer + 10, 0x100);
