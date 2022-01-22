@@ -8,7 +8,8 @@ cp bbcpdp.ssd ${ssdfile}
 
 build_gcc_c=1
 build_gcc_s=0
-build_pcc=1
+build_pcc_gnuas=1
+build_pcc_v7as=1
 build_v7=0
 
 add_file_to_ssd () {
@@ -44,9 +45,10 @@ then
     done
 fi
 
+LIBS=$(find lib -name '*.s')
 
 # PCC experiments
-if [ $build_pcc == "1" ]
+if [ $build_pcc_gnuas == "1" ]
 then
     for i in test.c mini.c spigot.c
     do
@@ -54,9 +56,10 @@ then
 
         # Use PCC as a compiler only
         pdp11-aout-bsd-pcc -S src/$i
-        mv ${i%.*}.s $name.s
-
         asm=$name.s
+        mv ${i%.*}.s ${asm}
+
+        # Hacky fixups...
         sed -i "s/jgt/bgt/" ${asm}
         sed -i "s/jlt/blt/" ${asm}
         sed -i "s/jle/ble/" ${asm}
@@ -69,13 +72,39 @@ then
         sed -i "s/jhos/bhos/" ${asm}
 
         # Allow jmps anywhere
-        sed -i "s/jbr/jmp/"  ${asm}
+        sed -i "s/jbr/br/"  ${asm}
 
         # Use GCC as an assembler/linker
         addr=0x100
-        pdp11-aout-gcc -nostdlib -Ttext $addr  src/crt0.s ${asm} lib/*.s -o ${name}
+        pdp11-aout-gcc -nostdlib -Ttext $addr -o ${name} src/crt0.s $LIBS ${asm}
         pdp11-aout-objdump -D $name --adjust-vma=$addr > $name.lst
-        #pdp11-aout-strip -D $name
+
+        pdp11-aout-strip -D $name
+        add_file_to_ssd $name
+    done
+fi
+
+gcc src/mangle.c -o mangle
+
+export APOUT_ROOT=unix_v7
+mkdir -p $APOUT_ROOT/tmp
+
+if [ $build_pcc_v7as == "1" ]
+then
+    for i in test.c mini.c spigot.c
+    do
+        name=`echo Q${i%.*} | tr "a-z" "A-Z"`
+
+        # Use PCC as a compiler only
+        pdp11-aout-bsd-pcc -S src/$i
+        asm=$name.s
+        mv ${i%.*}.s ${asm}
+
+        # Use Unix V7 As as an assembler
+        apout unix_v7/bin/as -o ${name} src/pad.s src/crt0.s $LIBS ${asm}
+        apout unix_v7/bin/strip ${name}
+        ./mangle ${name} ${name}
+
         add_file_to_ssd $name
     done
 fi
