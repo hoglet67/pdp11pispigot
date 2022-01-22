@@ -66,6 +66,9 @@ int main(int argc, char *argv[]) {
       buffer[HDR_SIZE + i] = buffer[HDR_SIZE + i + PAD_SIZE];
    }
 
+   // Set exec address to 0x100
+   write_word(buffer + 10, 0x100);
+
    // Write the file
    fp = fopen(outfile, "wb");
    if (!fp) {
