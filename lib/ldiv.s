@@ -5,16 +5,16 @@
 
 ldiv:
 	jsr	r5,csv
-	mov	10(r5),r3
+	mov	012(r5),r3
 	sxt	r4
 	bpl	1f
 	neg	r3
 	bmi	hardldiv
 1:
-	cmp	r4,8(r5)
+	cmp	r4,010(r5)
 	bne	hardldiv
-	mov	6(r5),r2
-	mov	4(r5),r1
+	mov	06(r5),r2
+	mov	04(r5),r1
 	bge	1f
 	neg	r1
 	neg	r2
@@ -52,8 +52,8 @@ ldiv:
 / The divisor is known to be >= 2^15 so only 17 cycles are needed.
 hardldiv:
 	clr	-(sp)
-	mov	6(r5),r2
-	mov	4(r5),r1
+	mov	06(r5),r2
+	mov	04(r5),r1
 	bpl	1f
 	com	(sp)
 	neg	r1
@@ -61,10 +61,10 @@ hardldiv:
 	sbc	r1
 1:
 	clr	r0
-	mov	8(r5),r3
+	mov	010(r5),r3
 	bge	1f
 	neg	r3
-	neg	10(r5)
+	neg	012(r5)
 	sbc	r3
 	com	(sp)
 1:
@@ -72,15 +72,15 @@ hardldiv:
 	cmp	r3,r0
 	bhi	1f
 	blo	2f
-	cmp	10(r5),r1
+	cmp	012(r5),r1
 	bhi	1f
 2:
 	inc	(sp)
-	sub	10(r5),r1
+	sub	012(r5),r1
 	sbc	r0
 	sub	r3,r0
 1:
-	mov	$16,r4
+	mov	$020,r4
 1:
 	clc
 	rol	r2
@@ -89,13 +89,13 @@ hardldiv:
 	cmp	r3,r0
 	bhi	3f
 	blo	2f
-	cmp	10(r5),r1
+	cmp	012(r5),r1
 	blos	2f
 3:
 	sob	r4,1b
 	br	1f
 2:
-	sub	10(r5),r1
+	sub	012(r5),r1
 	sbc	r0
 	sub	r3,r0
 	inc	r2

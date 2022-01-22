@@ -7,12 +7,12 @@
 
 lmul:
 	jsr	r5,csv
-	mov	6(r5),r2
+	mov	06(r5),r2
 	sxt	r1
-	sub	4(r5),r1
-	mov	10(r5),r0
+	sub	04(r5),r1
+	mov	012(r5),r0
 	sxt	r3
-	sub	8(r5),r3
+	sub	010(r5),r3
 	mul	r0,r1
 	mul	r2,r3
 	add	r1,r3
