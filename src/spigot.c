@@ -74,6 +74,7 @@ void outc(char c) {
    fflush(stdout);
 #else
    asm("mov %0, r0" :  : "r" (c) : "r0");
-   asm("emt 4");
+   // EMT 4
+   asm(".byte 4,0210");
 #endif
 }
