@@ -42,6 +42,9 @@ add_file_to_ssd () {
 SSDFILE=build.ssd
 cp bbcpdp.ssd ${SSDFILE}
 
+# Add in PIBAS
+add_file_to_ssd PIBAS
+
 # Prepare the PCC Libraries
 # TODO: Build a library .a file
 PCC_LIBS=$(find lib -name '*.s')
