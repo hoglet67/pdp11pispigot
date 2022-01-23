@@ -5,6 +5,9 @@ typedef unsigned char   uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned long  uint32_t;
 
+#define READ_TIME 1
+#define WRITE_TIME 2
+
 #ifdef LINUX
 
 #include <stdio.h>
@@ -20,6 +23,8 @@ inline int main() {
 #else // LINUX
 
 extern void outc(char c);
+
+extern void osword(unsigned short num, unsigned char *block);
 
 #endif // LINUX
 
