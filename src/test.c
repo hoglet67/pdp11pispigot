@@ -23,6 +23,25 @@ int main() {
 #else
 int program() {
 #endif
+
+   short s1 = S1;
+   short s2 = S2;
+   short sr;
+
+   unsigned short us1 = S1;
+   unsigned short us2 = S2;
+   unsigned short usr;
+
+   long l1 = L1;
+   long l2 = L2;
+   long lr;
+
+   unsigned long ul1 = L1;
+   unsigned long ul2 = L2;
+   unsigned long ulr;
+
+   outstr("Basic tests\r\n");
+
    outshort(0);
    outnl();
    outshort(12345);
@@ -35,10 +54,6 @@ int program() {
    outnl();
    outlong(-1234567890L);
    outnl();
-
-   volatile short s1 = S1;
-   volatile short s2 = S2;
-   volatile short sr;
 
    outstr("Signed short\r\n");
 
@@ -66,10 +81,6 @@ int program() {
       fail();
    }
 
-   volatile unsigned short us1 = S1;
-   volatile unsigned short us2 = S2;
-   volatile unsigned short usr;
-
    outstr("Unsigned short\r\n");
 
    usr = us1 / us2;
@@ -96,10 +107,6 @@ int program() {
       fail();
    }
 
-   volatile long l1 = L1;
-   volatile long l2 = L2;
-   volatile long lr;
-
    outstr("signed long\r\n");
 
    lr = l1 / l2;
@@ -125,10 +132,6 @@ int program() {
    } else {
       fail();
    }
-
-   volatile unsigned long ul1 = L1;
-   volatile unsigned long ul2 = L2;
-   volatile unsigned long ulr;
 
    outstr("unsigned long\r\n");
 
@@ -166,11 +169,11 @@ void fail() {
 }
 
 void outshort(short i) {
+   short p = 10000;
    if (i < 0) {
       outc('-');
       i = -i;
    }
-   uint16_t p = 10000;
    while (p) {
       char digit = '0';
       while (i >= p) {
@@ -192,7 +195,8 @@ void outhex(uint8_t i) {
 }
 
 void outhex32(uint32_t i) {
-   for (uint8_t d = 0; d < 8; d++) {
+   int d;
+   for (d = 0; d < 8; d++) {
       // Note: this uses ASHC which is a signed shift
       outhex(i >> 28);
       i <<= 4;
@@ -200,11 +204,11 @@ void outhex32(uint32_t i) {
 }
 
 void outlong(long i) {
+   long p = 1000000000L;
    if (i < 0) {
       outc('-');
       i = -i;
    }
-   uint32_t p = 1000000000L;
    while (p) {
       char digit = '0';
       while (i >= p) {

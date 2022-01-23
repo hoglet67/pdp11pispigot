@@ -58,7 +58,8 @@ void outhex(uint8_t i) {
 }
 
 void outhex32(uint32_t i) {
-   for (int d = 0; d < 8; d++) {
+   int d;
+   for (d = 0; d < 8; d++) {
       // Note: this uses ASHC which is a signed shift
       outhex(i >> 28);
       i <<= 4;
