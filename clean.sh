@@ -7,6 +7,7 @@ rm -f *.o
 rm -f *.inf
 rm -f mangle
 rm -f *.lst
+rm -f *.sym
 
 for i in A G P Q U
 do

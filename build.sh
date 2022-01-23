@@ -133,6 +133,11 @@ then
                 # U = Unix V7 compiler with Unix V7 assembler
 
                 U)
+                    apout unix_v7/bin/cc -o ${name} src/crt0_v7.s  src/v7/$i
+                    apout unix_v7/bin/nm -n ${name} >${name}.sym
+                    apout unix_v7/bin/strip ${name}
+                    ./mangle ${name} ${name}
+                    pdp11-aout-objdump -D $name --adjust-vma=$ADDR > $name.lst
                     ;;
 
             esac
