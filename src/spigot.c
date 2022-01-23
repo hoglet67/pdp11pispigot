@@ -1,26 +1,22 @@
-//#define LINUX
-
-#ifdef LINUX
-#include <stdio.h>
-#endif
+#include "tube.h"
 
 #define NDIGITS 1000
 
 #define N (7*NDIGITS/2)
 
-#define ARRAY 0x1FFE
 
 void outnl();
-void outc(char c);
 void print(short i);
+
+
+int program() {
 
 #ifdef LINUX
 short r[N + 1];
-int main() {
 #else
-int program() {
-   short *r = (short *)ARRAY;
+short *r = (short *)0x1FFE;
 #endif
+
    short i, k, b, c;
    long d;
    c = 0;
@@ -66,13 +62,4 @@ void print(short i) {
 void outnl() {
    outc(10);
    outc(13);
-}
-
-void outc(char c) {
-#ifdef LINUX
-   putchar(c);
-   fflush(stdout);
-#else
-   *((char *)(0xfff2)) = c;
-#endif
 }

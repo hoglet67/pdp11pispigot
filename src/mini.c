@@ -1,19 +1,11 @@
-typedef unsigned char   uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned long  uint32_t;
+#include "tube.h"
 
-void outc(char c);
 void outhex(uint8_t i);
 void outhex32(uint32_t i);
 void outnl();
-
 unsigned long udivmodsi4(unsigned long num, unsigned long den, int modwanted);
 
-#ifdef LINUX
-int main() {
-#else
 int program() {
-#endif
    uint32_t a = 0x12345678;
    uint32_t b = 0x100;
    uint32_t c = udivmodsi4(a, b, 0);
@@ -70,13 +62,3 @@ void outnl() {
    outc(10);
    outc(13);
 }
-
-#ifdef LINUX
-void outc(char c) {
-   putchar(c);
-}
-#else
-void outc(char c) {
-   *((char *)(0xfff2)) = c;
-}
-#endif

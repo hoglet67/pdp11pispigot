@@ -1,40 +1,59 @@
 #!/bin/bash
 
-ssdnum=488
+# SSD disk number to copy to in MMB file (if present)
+#
+SSDNUM=488
 
-ssdfile=build.ssd
+# Load address
+#
+ADDR=0x100
 
-cp bbcpdp.ssd ${ssdfile}
+# List of seperate programs to build
+#
+PROGS="test.c mini.c spigot.c"
 
-build_gcc_c=1
-build_gcc_s=0
-build_pcc_gnuas=1
-build_pcc_v7as=1
-build_ack=0
-build_v7=0
+# Enable/disable assembler build
+#
+BUILD_S=1
+
+# Enable/Disable C build
+#
+BUILD_C=1
+
+# Control specific C builds
+#
+# A = Ack compiler with Ack assembler
+# G = GCC compiler with GCC assembler
+# P = PCC compiler with GCC assembler
+# Q = PCC compiler with Unix V7 assembler
+# U = Unix V7 compiler with Unix V7 assembler
+#
+BUILD_C_TARGETS="A G P Q U"
 
 add_file_to_ssd () {
     md5sum $1
-#   beeb delete ${ssdfile} -y $1
+#   beeb delete ${SSDFILE} -y $1
     echo "$.$1    B000 B000" > $1.inf
-    beeb putfile ${ssdfile} $1
+    beeb putfile ${SSDFILE} $1
 #   rm -f $1.inf
 }
 
-if [ $build_gcc_c == "1" ]
-then
-   for i in test.c mini.c spigot.c
-   do
-       addr=0x100
-       name=`echo ${i%.*} | tr "a-z" "A-Z"`
-       pdp11-aout-gcc -nostdlib -Ttext $addr src/crt0.s src/$i -lgcc -o $name
-       pdp11-aout-objdump -D $name --adjust-vma=$addr > $name.lst
-       pdp11-aout-strip -D $name
-       add_file_to_ssd $name
-   done
-fi
+# Prepare the ssd image
+SSDFILE=build.ssd
+cp bbcpdp.ssd ${SSDFILE}
 
-if [ $build_gcc_s == "1" ]
+# Prepare the PCC Libraries
+# TODO: Build a library .a file
+PCC_LIBS=$(find lib -name '*.s')
+
+# Compile the mangle program removes 0x100 bytes of the a.out file
+gcc src/mangle.c -o mangle
+
+# Setup apout to point to a local unix_v7 directoty tree
+export APOUT_ROOT=unix_v7
+mkdir -p $APOUT_ROOT/tmp
+
+if [ $BUILD_S == "1" ]
 then
     for i in pieis.s
     do
@@ -46,98 +65,91 @@ then
     done
 fi
 
-LIBS=$(find lib -name '*.s')
-
-# PCC experiments
-if [ $build_pcc_gnuas == "1" ]
+if [ $BUILD_C == "1" ]
 then
-    for i in test.c mini.c spigot.c
+
+    for b in $BUILD_C_TARGETS
     do
-        name=`echo P${i%.*} | tr "a-z" "A-Z"`
 
-        # Use PCC as a compiler only
-        pdp11-aout-bsd-pcc -S src/$i
-        asm=$name.s
-        mv ${i%.*}.s ${asm}
+        for i in $PROGS
+        do
 
-        # Hacky fixups...
-        sed -i "s/jgt/bgt/" ${asm}
-        sed -i "s/jlt/blt/" ${asm}
-        sed -i "s/jle/ble/" ${asm}
-        sed -i "s/jge/bge/" ${asm}
-        sed -i "s/jeq/beq/" ${asm}
-        sed -i "s/jhi/bhi/" ${asm}
-        sed -i "s/jlo/blo/" ${asm}
-        sed -i "s/jne/bne/" ${asm}
-        sed -i "s/jlos/blos/" ${asm}
-        sed -i "s/jhos/bhos/" ${asm}
+            name=`echo ${b}${i%.*} | tr "a-z" "A-Z"`
 
-        # Allow jmps anywhere
-        sed -i "s/jbr/br/"  ${asm}
+            case $b in
 
-        # Use GCC as an assembler/linker
-        addr=0x100
-        pdp11-aout-gcc -nostdlib -Ttext $addr -o ${name} src/crt0.s $LIBS ${asm}
-        pdp11-aout-objdump -D $name --adjust-vma=$addr > $name.lst
+                # A = Ack compiler with Ack assembler
 
-        pdp11-aout-strip -D $name
-        add_file_to_ssd $name
+                A)
+                    ack -w -mpdpv7 src/crt0_ack.s src/$i -o $name
+                    ./mangle ${name} ${name}
+                    pdp11-aout-objdump -D $name --adjust-vma=$ADDR > $name.lst
+                    ;;
+
+                # G = GCC compiler with GCC assembler
+
+                G)
+                    pdp11-aout-gcc -nostdlib -Ttext $ADDR src/crt0_gcc.s src/$i -lgcc -o $name
+                    pdp11-aout-objdump -D $name --adjust-vma=$ADDR > $name.lst
+                    pdp11-aout-strip -D $name
+                    ;;
+
+                # P = PCC compiler with GCC assembler
+
+                P)
+                    # Use PCC as a compiler only
+                    pdp11-aout-bsd-pcc -S src/$i
+                    asm=$name.s
+                    mv ${i%.*}.s ${asm}
+                    # Hacky fixups...
+                    sed -i "s/jgt/bgt/"   ${asm}
+                    sed -i "s/jlt/blt/"   ${asm}
+                    sed -i "s/jle/ble/"   ${asm}
+                    sed -i "s/jge/bge/"   ${asm}
+                    sed -i "s/jeq/beq/"   ${asm}
+                    sed -i "s/jhi/bhi/"   ${asm}
+                    sed -i "s/jlo/blo/"   ${asm}
+                    sed -i "s/jne/bne/"   ${asm}
+                    sed -i "s/jlos/blos/" ${asm}
+                    sed -i "s/jhos/bhos/" ${asm}
+                    sed -i "s/jbr/br/"    ${asm}
+                    # Use GCC as an assembler/linker
+                    pdp11-aout-gcc -nostdlib -Ttext $ADDR -o ${name} src/crt0_pcc.s $PCC_LIBS ${asm}
+                    pdp11-aout-objdump -D $name --adjust-vma=$ADDR > $name.lst
+                    pdp11-aout-strip -D $name
+                    ;;
+
+                # Q = PCC compiler with Unix V7 assembler
+
+                Q)
+                    pdp11-aout-bsd-pcc -S src/$i
+                    asm=$name.s
+                    mv ${i%.*}.s ${asm}
+                    apout unix_v7/bin/as -o ${name} src/pad.s src/crt0_pcc.s $PCC_LIBS ${asm}
+                    apout unix_v7/bin/strip ${name}
+                    ./mangle ${name} ${name}
+                    ;;
+
+                # U = Unix V7 compiler with Unix V7 assembler
+
+                U)
+                    ;;
+
+            esac
+
+            # Add the file into the SSD image
+            add_file_to_ssd $name
+        done
     done
 fi
 
-gcc src/mangle.c -o mangle
+# Final Packaging
+beeb title ${SSDFILE} "PDP-11 Pi"
+beeb info ${SSDFILE}
 
-export APOUT_ROOT=unix_v7
-mkdir -p $APOUT_ROOT/tmp
-
-if [ $build_pcc_v7as == "1" ]
-then
-    for i in test.c mini.c spigot.c
-    do
-        name=`echo Q${i%.*} | tr "a-z" "A-Z"`
-
-        # Use PCC as a compiler only
-        pdp11-aout-bsd-pcc -S src/$i
-        asm=$name.s
-        mv ${i%.*}.s ${asm}
-
-        # Use Unix V7 As as an assembler
-        apout unix_v7/bin/as -o ${name} src/pad.s src/crt0.s $LIBS ${asm}
-        apout unix_v7/bin/strip ${name}
-        ./mangle ${name} ${name}
-
-        add_file_to_ssd $name
-    done
-fi
-
-if [ $build_ack == "1" ]
-then
-   for i in test.c mini.c spigot.c
-   do
-       addr=0x100
-       name=`echo A${i%.*} | tr "a-z" "A-Z"`
-       ack -w -mpdpv7 src/apad.s src/$i -o $name
-       ./mangle ${name} ${name}
-       addr=0x100
-       pdp11-aout-objdump -D $name --adjust-vma=$addr > $name.lst
-       add_file_to_ssd $name
-   done
-fi
-
-
-# Unix V7 experiments
-#
-if [ $build_v7 == "1" ]
-then
-    add_file_to_ssd unix_v7/PIV7
-    add_file_to_ssd unix_v7/PIV7X
-fi
-
-beeb title ${ssdfile} "PDP-11 Pi"
-beeb info ${ssdfile}
-
+# Copy to the SD Card if it's present
 if [ -f $BBC_FILE ];
 then
-    beeb dkill -y ${ssdnum}
-    beeb dput_ssd ${ssdnum} ${ssdfile}
+    beeb dkill -y ${SSDNUM}
+    beeb dput_ssd ${SSDNUM} ${SSDFILE}
 fi

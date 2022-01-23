@@ -1,6 +1,4 @@
-typedef unsigned char   uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned long  uint32_t;
+#include "tube.h"
 
 void outc(char c);
 void outhex(uint8_t i);
@@ -18,11 +16,7 @@ void fail();
 #define L1 1234567890L
 #define L2 10000L
 
-#ifdef LINUX
-int main() {
-#else
 int program() {
-#endif
 
    short s1 = S1;
    short s2 = S2;
@@ -230,13 +224,3 @@ void outnl() {
    outc(10);
    outc(13);
 }
-
-#ifdef LINUX
-void outc(char c) {
-   putchar(c);
-}
-#else
-void outc(char c) {
-   *((char *)(0xfff2)) = c;
-}
-#endif
