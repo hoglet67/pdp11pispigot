@@ -24,11 +24,11 @@ BUILD_C=1
 #
 # A = Ack compiler with Ack assembler
 # G = GCC compiler with GCC assembler
-# P = PCC compiler with GCC assembler
-# Q = PCC compiler with Unix V7 assembler
+# P = PCC compiler with Unix V7 assembler
+# Q = PCC compiler with GCC assembler (broken because of jbr/jcc)
 # U = Unix V7 compiler with Unix V7 assembler
 #
-BUILD_C_TARGETS="A G P Q U"
+BUILD_C_TARGETS="A G P U"
 
 add_file_to_ssd () {
     md5sum $1
@@ -94,9 +94,9 @@ then
                     pdp11-aout-strip -D $name
                     ;;
 
-                # P = PCC compiler with GCC assembler
+                # Q = PCC compiler with GCC assembler
 
-                P)
+                Q)
                     # Use PCC as a compiler only
                     pdp11-aout-bsd-pcc -S src/$i
                     asm=$name.s
@@ -119,16 +119,19 @@ then
                     pdp11-aout-strip -D $name
                     ;;
 
-                # Q = PCC compiler with Unix V7 assembler
+                # P = PCC compiler with Unix V7 assembler
 
-                Q)
+                P)
                     pdp11-aout-bsd-pcc -S src/$i
                     asm=$name.s
                     mv ${i%.*}.s ${asm}
                     apout unix_v7/bin/as -o ${name} src/pad.s src/crt0_pcc.s $PCC_LIBS ${asm}
+                    apout unix_v7/bin/nm -n ${name} >${name}.sym
                     apout unix_v7/bin/strip ${name}
                     ./mangle ${name} ${name}
+                    pdp11-aout-objdump -D $name --adjust-vma=$ADDR > $name.lst
                     ;;
+
 
                 # U = Unix V7 compiler with Unix V7 assembler
 
