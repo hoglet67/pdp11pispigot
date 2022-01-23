@@ -10,6 +10,7 @@ build_gcc_c=1
 build_gcc_s=0
 build_pcc_gnuas=1
 build_pcc_v7as=1
+build_ack=0
 build_v7=0
 
 add_file_to_ssd () {
@@ -107,6 +108,20 @@ then
 
         add_file_to_ssd $name
     done
+fi
+
+if [ $build_ack == "1" ]
+then
+   for i in test.c mini.c spigot.c
+   do
+       addr=0x100
+       name=`echo A${i%.*} | tr "a-z" "A-Z"`
+       ack -w -mpdpv7 src/apad.s src/$i -o $name
+       ./mangle ${name} ${name}
+       addr=0x100
+       pdp11-aout-objdump -D $name --adjust-vma=$addr > $name.lst
+       add_file_to_ssd $name
+   done
 fi
 
 

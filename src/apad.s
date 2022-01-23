@@ -1,0 +1,143 @@
+.sect .text
+
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+    mov r0,r0
+
+.extern _main
+
+_main:
+    jsr pc, _program
+    emt 0
