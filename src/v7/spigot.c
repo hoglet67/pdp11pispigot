@@ -9,11 +9,16 @@ outnl();
 print();
 
 
-program() {
-
 #ifdef LINUX
+outc(c)
+char c;
+{
+   putchar(c);
+}
+main() {
 short r[N + 1];
 #else
+program() {
 short *r = (short *)0x1FFE;
 #endif
 
@@ -40,8 +45,9 @@ short *r = (short *)0x1FFE;
          printf("%04x %04x\n", 0x0FFE + 2 * x, r[x]);
       }
 #endif
-      print(c + d/10000);
+      i = d/10000 + c;
       c = d%10000;
+      print(i);
    }
    outnl();
 }
