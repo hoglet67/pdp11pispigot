@@ -5,8 +5,35 @@
 #define N (7*NDIGITS/2)
 
 
+outlong();
+outstr();
 outnl();
 print();
+
+write_time(time)
+long time;
+{
+   char block[5];
+   int i;
+   for (i = 0; i < sizeof(block); i++) {
+      block[i] = time & 0xff;
+      time >>= 8;
+   }
+   osword(WRITE_TIME, block);
+}
+
+read_time() {
+   char block[5];
+   short i;
+   long time = 0;
+   osword(READ_TIME, block);
+   for (i = sizeof(block) - 1; i >= 0; i--) {
+      time = (time << 8) + block[i];
+   }
+   outlong(time);
+   outstr(" centi-seconds");
+   outnl();
+}
 
 
 #ifdef LINUX
@@ -24,6 +51,8 @@ short *r = (short *)0x1FFE;
 
    short i, k, b, c;
    long d;
+   write_time(0);
+   read_time();
    c = 0;
    for (i = 1; i <= N; i++)
       r[i] = 2000;
@@ -50,10 +79,11 @@ short *r = (short *)0x1FFE;
       print(i);
    }
    outnl();
+   read_time();
 }
 
 print(i)
-short i;
+   short i;
 {
    short p = 1000;
    do {
@@ -65,6 +95,33 @@ short i;
       p /= 10;
       outc(digit);
    } while (p);
+}
+
+outlong(i)
+   long i;
+{
+   long p = 1000000000L;
+   if (i < 0) {
+      outc('-');
+      i = -i;
+   }
+   while (p) {
+      char digit = '0';
+      while (i >= p) {
+         i = i - p;
+         digit++;
+      }
+      outc(digit);
+      p /= 10L;
+   };
+}
+
+outstr(c)
+   char *c;
+{
+   while (*c) {
+      outc(*c++);
+   }
 }
 
 outnl() {
