@@ -1,9 +1,10 @@
 .text
 .even
 .globl  _program
-.globl  ___main
+.globl  _main
 .globl  _start
 
+_main:
 _start:
     jsr pc,_program
     // EMT 0

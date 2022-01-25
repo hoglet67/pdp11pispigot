@@ -30,7 +30,7 @@ _osword:
     mov sp, r5
     mov 4(r5), r0
     mov 6(r5), r1
-    // EMT 4
+    // EMT 3
     .byte 3,0210
     mov (sp)+,r5
     rts pc

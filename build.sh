@@ -38,6 +38,15 @@ add_file_to_ssd () {
 #   rm -f $1.inf
 }
 
+# Setup apout to point to a local unix_v7 directoty tree
+export APOUT_ROOT=unix_v7
+mkdir -p $APOUT_ROOT/tmp
+
+# Swallow warning from apout that mentions a_magic2
+run_apout () {
+    apout $* |& grep -v a_magic2
+}
+
 # Prepare the ssd image
 SSDFILE=build.ssd
 cp bbcpdp.ssd ${SSDFILE}
@@ -46,15 +55,22 @@ cp bbcpdp.ssd ${SSDFILE}
 add_file_to_ssd PIBAS
 
 # Prepare the PCC Libraries
-# TODO: Build a library .a file
 PCC_LIBS=$(find lib -name '*.s')
 
 # Compile the mangle program removes 0x100 bytes of the a.out file
 gcc src/mangle.c -o mangle
 
-# Setup apout to point to a local unix_v7 directoty tree
-export APOUT_ROOT=unix_v7
-mkdir -p $APOUT_ROOT/tmp
+# Package the Unix V7 libraries into an archive
+UNIX_V7_LIB=lib/libunix.a
+rm -f $UNIX_V7_LIB
+for i in $PCC_LIBS
+do
+    OBJ=${i%.s}.o
+    run_apout unix_v7/bin/as -o $OBJ $i
+    run_apout unix_v7/bin/ar cr $UNIX_V7_LIB $OBJ
+done
+echo "$UNIX_V7_LIB includes:"
+run_apout unix_v7/bin/ar t $UNIX_V7_LIB
 
 if [ $BUILD_S == "1" ]
 then
@@ -129,7 +145,7 @@ then
                     pdp11-aout-bsd-pcc -S src/$i
                     asm=$name.s
                     mv ${i%.*}.s ${asm}
-                    apout unix_v7/bin/as -o ${name} src/pad.s src/crt0_pcc.s $PCC_LIBS ${asm}
+                    run_apout unix_v7/bin/cc -o ${name} src/pad.s src/crt0_pcc.s ${asm} $UNIX_V7_LIB
                     ./mangle ${name} ${name} -d
                     pdp11-aout-objdump -D $name --adjust-vma=$ADDR > $name.lst
                     pdp11-aout-strip -D $name
@@ -137,9 +153,9 @@ then
 
 
                 # U = Unix V7 compiler with Unix V7 assembler
-
+                # TODO: this could use pad.s / crt0_pcc.s
                 U)
-                    apout unix_v7/bin/cc -o ${name} src/crt0_v7.s  src/v7/$i
+                    run_apout unix_v7/bin/cc -o ${name} src/crt0_v7.s  src/v7/$i
                     ./mangle ${name} ${name} -d
                     pdp11-aout-objdump -D $name --adjust-vma=$ADDR > $name.lst
                     pdp11-aout-strip -D $name
