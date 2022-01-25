@@ -85,8 +85,9 @@ then
 
                 A)
                     ack -w -mpdpv7 src/crt0_ack.s src/$i -o $name
-                    ./mangle ${name} ${name}
+                    ./mangle ${name} ${name} -d
                     pdp11-aout-objdump -D $name --adjust-vma=$ADDR > $name.lst
+                    pdp11-aout-strip -D $name
                     ;;
 
                 # G = GCC compiler with GCC assembler
@@ -129,10 +130,9 @@ then
                     asm=$name.s
                     mv ${i%.*}.s ${asm}
                     apout unix_v7/bin/as -o ${name} src/pad.s src/crt0_pcc.s $PCC_LIBS ${asm}
-                    apout unix_v7/bin/nm -n ${name} >${name}.sym
-                    apout unix_v7/bin/strip ${name}
-                    ./mangle ${name} ${name}
+                    ./mangle ${name} ${name} -d
                     pdp11-aout-objdump -D $name --adjust-vma=$ADDR > $name.lst
+                    pdp11-aout-strip -D $name
                     ;;
 
 
@@ -140,10 +140,9 @@ then
 
                 U)
                     apout unix_v7/bin/cc -o ${name} src/crt0_v7.s  src/v7/$i
-                    apout unix_v7/bin/nm -n ${name} >${name}.sym
-                    apout unix_v7/bin/strip ${name}
-                    ./mangle ${name} ${name}
+                    ./mangle ${name} ${name} -d
                     pdp11-aout-objdump -D $name --adjust-vma=$ADDR > $name.lst
+                    pdp11-aout-strip -D $name
                     ;;
 
             esac
