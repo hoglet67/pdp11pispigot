@@ -80,7 +80,10 @@ int main(int argc, char *argv[]) {
          predigit = 0;
          nines = 0;
       } else {
-         printf(format, predigit);
+         // Supress the first chunk
+         if (k < n) {
+            printf(format, predigit);
+         }
          for (i = 0; i < nines; i++) {
             printf(format, e - 1);
          }
