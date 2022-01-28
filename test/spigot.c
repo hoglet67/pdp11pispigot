@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
    char format[10];
    thing1 nines;
    thing1 predigit;
+   thing1 nchunks;
 
    if (argc > 1) {
       ndigits = atoi(argv[1]);
@@ -25,21 +26,22 @@ int main(int argc, char *argv[]) {
    for (i = 0; i < chunk; i++) {
       e *= 10;
    }
-   l = 0;
-   for (i = 1; i < e; i *= 2) {
-      l++;
-   }
    // Round up to an integer multiple of chunk size
    if (ndigits % chunk) {
       ndigits = ndigits + chunk - (ndigits % chunk);
    }
-   n = l * (ndigits / chunk);
+
+   // Calculate the number of chunks
+   nchunks = ndigits / chunk;
+
+   // Calculate the number of columns
+   n = 1 + 10 * ndigits / 3;
 
    sprintf(format, "%%.%dd", chunk);
 
 #ifdef DEBUG
-         printf("format = %s, ndigits = %d; chunk = %d; e = %d; l = %d, n = %d, n/l = %d\n",
-             format, ndigits, chunk, e, l, n, n/l);
+         printf("format = %s, ndigits = %d; chunk = %d; e = %d; n = %d\n",
+             format, ndigits, chunk, e, n);
 #endif
 
    // Allocate memory
@@ -55,9 +57,9 @@ int main(int argc, char *argv[]) {
 
    // Run the spigot
    c = 0;
-   for (k = n; k > 0; k -= l) {
+   for (k = nchunks; k > 0; k -= 1) {
       d = 0;
-      i = k;
+      i = 1 + k * chunk * 10 / 3;
       for(;;) {
          d += r[i]*e;
          b = i*2 - 1;
@@ -81,7 +83,7 @@ int main(int argc, char *argv[]) {
          nines = 0;
       } else {
          // Supress the first chunk
-         if (k < n) {
+         if (k < nchunks) {
             printf(format, predigit);
          }
          for (i = 0; i < nines; i++) {
