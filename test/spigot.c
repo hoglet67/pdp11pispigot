@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
    thing1 nines;
    thing1 predigit;
    thing1 nchunks;
+   thing1 extra;
 
    if (argc > 1) {
       ndigits = atoi(argv[1]);
@@ -31,11 +32,16 @@ int main(int argc, char *argv[]) {
       ndigits = ndigits + chunk - (ndigits % chunk);
    }
 
-   // Calculate the number of chunks
-   nchunks = ndigits / chunk;
+   // Calculate the number of chunks - the +1 is to accomodate
+   // the output delay introduced by the predigit machinary
+   nchunks = ndigits / chunk + 1;
+
+   // Additional columns to increase the probability of precision
+   // at the end - this is currently somewhat arbitatry
+   extra = 4;
 
    // Calculate the number of columns
-   n = 1 + 10 * ndigits / 3;
+   n = extra + 10 * nchunks * chunk / 3;
 
    sprintf(format, "%%.%dd", chunk);
 
@@ -59,7 +65,7 @@ int main(int argc, char *argv[]) {
    c = 0;
    for (k = nchunks; k > 0; k -= 1) {
       d = 0;
-      i = 1 + k * chunk * 10 / 3;
+      i = extra + k * chunk * 10 / 3;
       for(;;) {
          d += r[i]*e;
          b = i*2 - 1;
@@ -71,7 +77,19 @@ int main(int argc, char *argv[]) {
       }
       x = c + d/e;
       c = d%e;
-
+#ifdef DEBUG
+      if (x > e) {
+         for (int z = 0; z < chunk; z++) {
+            putchar('#');
+         }
+      } else if (x == e) {
+         for (int z = 0; z < chunk; z++) {
+            putchar('*');
+         }
+      } else {
+         printf(format, x);
+      }
+#else
       if (x == e - 1) {
          nines++;
       } else if (x == e) {
@@ -92,6 +110,7 @@ int main(int argc, char *argv[]) {
          predigit = x;
          nines = 0;
       }
+#endif
    }
    printf("\n");
 }
