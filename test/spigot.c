@@ -5,8 +5,13 @@
 typedef uint32_t thing1;
 typedef uint32_t thing2;
 
+thing1 num_cols(thing1 nchunks, thing1 chunk) {
+   int extra = 2;
+   return (nchunks * chunk + extra) * 10 / 3;
+}
+
 int main(int argc, char *argv[]) {
-   short chunk = 4;
+   short chunk = 1;
    thing1 ndigits = 800;
    thing1 i, k, b, c, e, l, n, q, x;
    thing1 *r;
@@ -32,16 +37,11 @@ int main(int argc, char *argv[]) {
       ndigits = ndigits + chunk - (ndigits % chunk);
    }
 
-   // Calculate the number of chunks - the +1 is to accomodate
-   // the output delay introduced by the predigit machinary
-   nchunks = ndigits / chunk + 1;
-
-   // Additional columns to increase the probability of precision
-   // at the end - this is currently somewhat arbitatry
-   extra = 4;
+   // Calculate the number of chunks
+   nchunks = ndigits / chunk;
 
    // Calculate the number of columns
-   n = extra + 10 * nchunks * chunk / 3;
+   n = num_cols(nchunks, chunk);
 
    sprintf(format, "%%.%dd", chunk);
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
    c = 0;
    for (k = nchunks; k > 0; k -= 1) {
       d = 0;
-      i = extra + k * chunk * 10 / 3;
+      i = num_cols(k, chunk);
       for(;;) {
          d += r[i]*e;
          b = i*2 - 1;
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
       }
       x = c + d/e;
       c = d%e;
-#ifdef DEBUG
+#ifdef XDEBUG
       if (x > e) {
          for (int z = 0; z < chunk; z++) {
             putchar('#');
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
          predigit = 0;
          nines = 0;
       } else {
-         // Supress the first chunk
+         // Suppress the first chunk
          if (k < nchunks) {
             printf(format, predigit);
          }
@@ -111,6 +111,10 @@ int main(int argc, char *argv[]) {
          nines = 0;
       }
 #endif
+   }
+   printf(format, predigit);
+   for (i = 0; i < nines; i++) {
+      printf(format, e - 1);
    }
    printf("\n");
 }
