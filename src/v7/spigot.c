@@ -51,7 +51,7 @@ short *r = (short *)0x1FFE;
 
    short i, k, b, c;
    long d;
-   write_time(0);
+   write_time(0L);
    read_time();
    c = 0;
    for (i = 1; i <= N; i++)

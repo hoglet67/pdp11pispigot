@@ -53,7 +53,7 @@ void outhex32(uint32_t i) {
    int d;
    for (d = 0; d < 8; d++) {
       // Note: this uses ASHC which is a signed shift
-      outhex(i >> 28);
+      outhex((uint8_t)(i >> 28));
       i <<= 4;
    }
 }

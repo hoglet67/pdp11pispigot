@@ -64,7 +64,7 @@ long i;
    int d;
    for (d = 0; d < 8; d++) {
       /* Note: this uses ASHC which is a signed shift */
-      outhex(i >> 28);
+      outhex((char) (i >> 28));
       i <<= 4;
    }
 }
