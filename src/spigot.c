@@ -25,7 +25,17 @@ void read_time() {
    long time = 0;
    osword(READ_TIME, block);
    for (i = sizeof(block) - 1; i >= 0; i--) {
-      time = (time << 8) + block[i];
+      // Casting block[i] to unsigned is unnecessary
+      // but without this PCC generated incorrect code.
+      //
+      // Without the cast, the result in r1 is wrongly sign extended
+      // 26a:	9200           	movb	(r0), r0
+      // 26c:	1001           	mov	r0, r1
+      //
+      // With the case, the resint in r1 has the top 8-bits clear
+      // 26a:	0a01           	clr	r1
+      // 26c:	d201           	bisb	(r0), r1
+      time = (time << 8) + ((unsigned)block[i]);
    }
    outlong(time);
    outstr(" centi-seconds");
