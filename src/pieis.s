@@ -136,8 +136,9 @@ m6:      mov r3,1(r1)      /r[i] <- d%b
          tst (sp)+       /release the location for temp
          mov (sp)+,r5
 
-loop:   br loop
-/         rts pc
+         / exit back to the supervisor prompt
+         emt 0
+
 /piemu start
 divm:
      /clc          /check CF = 0!
